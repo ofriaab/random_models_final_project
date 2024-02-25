@@ -272,6 +272,19 @@ def calculate_standard_deviation(degrees):
     variance = sum((degree - mean) ** 2 * count for degree, count in degrees.items()) / sum(degrees.values())
     return variance ** 0.5
 
+def transitive_closure(neighborhood_matrix):
+    num_nodes = len(neighborhood_matrix)
+    
+    # Initialize the transitive closure matrix with the original neighborhood matrix
+    closure_matrix = [row[:] for row in neighborhood_matrix]
+
+    for k in range(num_nodes):
+        for i in range(num_nodes):
+            for j in range(num_nodes):
+                closure_matrix[i][j] = closure_matrix[i][j] or (closure_matrix[i][k] and closure_matrix[k][j])
+
+    return closure_matrix
+
 
 deps_directory = 'deps'
 process_files_in_directory(deps_directory)
