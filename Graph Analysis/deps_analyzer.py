@@ -10,6 +10,13 @@ class Node:
         self.out_neighbors = []
         self.in_neighbors = []
 
+class Graph:
+
+    def __init__(self, nodes, total_nodes, neighborhood_matrix):
+        self.nodes = nodes
+        self.total_nodes = total_nodes
+        self.neighborhood_matrix = neighborhood_matrix
+
 
 def parse_graph_from_file(filename):
     nodes = {}
@@ -25,7 +32,16 @@ def parse_graph_from_file(filename):
                 total_nodes += 1
             nodes[src].out_neighbors.append(nodes[dest])
             nodes[dest].in_neighbors.append(nodes[src])
-    return nodes, total_nodes
+
+    # Create the neighborhood matrix
+    neighborhood_matrix = [[0] * total_nodes for _ in range(total_nodes)]
+    for node in nodes.values():
+        for neighbor in node.out_neighbors:
+            neighborhood_matrix[node.data - 1][neighbor.data - 1] = 1
+
+    new_graph = Graph(nodes, total_nodes, neighborhood_matrix)
+
+    return new_graph
 
 
 def calculate_degrees(nodes):
@@ -158,13 +174,18 @@ def process_files_in_directory(directory):
     total_nodes_list = []
     critical_path_lengths = []
     nodes_list = []
+    neighborhood_matrices = []  # Added list to store neighborhood matrices
 
     for filename in os.listdir(directory):
         if filename.endswith(".deps"):
             filepath = os.path.join(directory, filename)
-            nodes, total_nodes = parse_graph_from_file(filepath)
+            new_graph = parse_graph_from_file(filepath)
+            nodes = new_graph.nodes
+            total_nodes = new_graph.total_nodes
+            neighborhood_matrix = new_graph.neighborhood_matrix
             total_nodes_list.append(total_nodes)
             nodes_list.append(nodes)
+            neighborhood_matrices.append(neighborhood_matrix)
 
             _, length = find_critical_path(nodes)
             critical_path_lengths.append(length)
@@ -200,6 +221,8 @@ def process_files_in_directory(directory):
     expected_value_critical_path_length = sum(critical_path_lengths) / len(critical_path_lengths)
     print("Expected value of critical path length:", expected_value_critical_path_length)
 
+    return nodes_list, total_nodes_list, critical_path_lengths, neighborhood_matrices
+
 
 def excel_files_in_directory(directory):
     wb = openpyxl.Workbook()
@@ -213,7 +236,9 @@ def excel_files_in_directory(directory):
     for filename in os.listdir(directory):
         if filename.endswith(".deps"):
             filepath = os.path.join(directory, filename)
-            nodes, total_nodes = parse_graph_from_file(filepath)
+            new_graph = parse_graph_from_file(filepath)
+            nodes = new_graph.nodes
+            total_nodes = new_graph.total_nodes
 
             in_degrees, out_degrees = calculate_degrees(nodes)
             in_degree_std_dev = calculate_standard_deviation(in_degrees)
