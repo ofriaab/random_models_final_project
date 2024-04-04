@@ -57,7 +57,7 @@ def find_maximal_matching(nodes):
 
 
 def calculate_width(nodes, total_nodes, matching_size):
-    width = total_nodes - matching_size
+    width = (total_nodes - matching_size)/total_nodes
     return width
 
 
