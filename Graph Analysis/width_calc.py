@@ -1,5 +1,6 @@
 import os
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 
@@ -78,11 +79,8 @@ def process_dag_file(filename):
     return width
 
 def plot_width_distribution(widths):
-    width_counts = {width: widths.count(width) for width in set(widths)}
-    sorted_widths = sorted(width_counts.keys())
-    frequencies = [width_counts[width] for width in sorted_widths]
-
-    plt.bar(sorted_widths, frequencies, color='skyblue', edgecolor='skyblue')
+    plt.figure(figsize=(8,6))
+    sns.histplot(widths,bins=20,kde=True)
     plt.title('Width Distribution')
     plt.xlabel('Width')
     plt.ylabel('Frequency')
