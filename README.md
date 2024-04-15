@@ -4,7 +4,7 @@
 
 This project aims to analyze Directed Acyclic Graphs (DAGs) data, primarily focusing on non-running time DAGs obtained from Mobileye datasets. The main steps of the project are:
 
-1. **Analyzing DAG's Data **
+1. **Analyzing DAG's Data**
 2. **Generating Random Models of DAGs**
 3. **Simulating DAGs and Comparing with Heuristics**
 
