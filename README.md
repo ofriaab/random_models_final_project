@@ -37,4 +37,3 @@ In the final phase, we will simulate the generated DAG models and compare them w
 
 - Ofri Abramovich
 - Yair Rachmani
->>>>>>> main
