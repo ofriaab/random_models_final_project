@@ -1,4 +1,3 @@
-=======
 # DAG Analysis and Random Model Generation
 
 ## Project Overview
