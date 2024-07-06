@@ -153,11 +153,41 @@ def plot_degree_distribution(degree_counts, degree_type, expected_value):
     plt.grid(True)
     plt.show()
 
+def calculate_runtime_distribution(nodes):
+    runtimes = []
+    for node in nodes.values():
+        for neighbor in node.out_neighbors:
+            runtime = neighbor.data - node.data  # Assuming node.data represents start time and neighbor.data represents end time
+            runtimes.append(runtime)
+    return runtimes
+
+
+def plot_degree_correlation(nodes):
+    in_degrees = [len(node.in_neighbors) for node in nodes.values()]
+    out_degrees = [len(node.out_neighbors) for node in nodes.values()]
+
+    plt.scatter(in_degrees, out_degrees)
+    plt.title('Correlation between In-Degrees and Out-Degrees')
+    plt.xlabel('In-Degree')
+    plt.ylabel('Out-Degree')
+    plt.grid(True)
+    plt.show()
+
+
+def plot_runtime_distribution(runtimes):
+    plt.hist(runtimes, bins=20, color='skyblue')
+    plt.title('Task Runtimes Distribution')
+    plt.xlabel('Runtime')
+    plt.ylabel('Frequency')
+    plt.grid(True)
+    plt.show()
+
 
 def process_files_in_directory(directory):
     total_nodes_list = []
     critical_path_lengths = []
     nodes_list = []
+    runtimes_list = []
 
     for filename in os.listdir(directory):
         if filename.endswith(".deps"):
@@ -168,6 +198,9 @@ def process_files_in_directory(directory):
 
             _, length = find_critical_path(nodes)
             critical_path_lengths.append(length)
+
+            runtimes = calculate_runtime_distribution(nodes)
+            runtimes_list.extend(runtimes)
 
     combined_in_degree_counts, combined_out_degree_counts = combine_degree_counts(nodes_list)
 
@@ -191,6 +224,12 @@ def process_files_in_directory(directory):
 
     # Plotting combined out-degree distribution
     plot_degree_distribution(combined_out_degree_counts, "Out", expected_value_out_degree_nodes)
+
+    # Plotting degree correlation
+    plot_degree_correlation(nodes_list[0])  # Assuming all graphs have the same degree distribution
+
+    # Plotting runtime distribution
+    plot_runtime_distribution(runtimes_list)
 
     # Calculate expected value of nodes
     expected_value_nodes = sum(total_nodes_list) / len(total_nodes_list)
