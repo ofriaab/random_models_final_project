@@ -1,5 +1,5 @@
 import os
-
+import numpy as np
 import gsf_prof
 import sys
 import matplotlib.pyplot as plt
@@ -102,11 +102,21 @@ def remove_highest_10_percent(values):
 # Example usage
 
 result = remove_highest_10_percent(total_running_time_lst)
+average_running_time = np.mean(result)
+print(f'the mean is : {average_running_time}')
+# Calculate the histogram data
+counts, bin_edges = np.histogram(result, bins=50)
+
+# Create a dictionary of bin edges and counts
+hist_dict = {f'{bin_edges[i]:.2f}-{bin_edges[i+1]:.2f}': counts[i] for i in range(len(counts))}
+
+# Print the dictionary
+print(hist_dict)
 
 
 # Plotting
 plt.figure(figsize=(10, 6))  # Adjust size if necessary
-plt.hist(result, bins=30, edgecolor='black', alpha=0.7)
+plt.hist(result, bins=50, edgecolor='black', alpha=0.7)
 plt.xlabel('running time')
 plt.ylabel('Frequency')
 plt.title('Frequency Distribution of running time of tasks')
