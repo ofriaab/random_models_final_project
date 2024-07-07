@@ -6,7 +6,7 @@ class GraphModel:
     def __init__(self, n, runtime_range=(1, 100)):
         self.n = n
         self.runtime_range = runtime_range
-        self.nodes = [{'id': i, 'runtime': random.randint(*self.runtime_range), 'predecessors': []} for i in range(n)]
+        self.nodes = [{'id': i, 'runtime': random.randint(*self.runtime_range), 'predecessors': [], 'weight': 1, 'out_degree':0, 'position':i } for i in range(n)]
         self.graph = nx.DiGraph()  # Directed graph
 
     def generate_graph(self):
@@ -49,10 +49,9 @@ class CustomModel(GraphModel):
 
     def add_edge(self, u, v):
         self.graph.add_edge(u['id'], v['id'])
-        u['degree'] += 1
-        v['degree'] += 1
-        u['weight'] = u['degree'] + 1
-        v['weight'] = v['degree'] + 1
+        u['out_degree'] += 1
+        u['weight'] = u['weight'] + 1
+        v['weight'] = v['weight'] + 1
         v['predecessors'].append(u['id'])
 
     def generate_graph(self):
@@ -108,21 +107,19 @@ def main():
 
     # Custom Model
     custom_model = CustomModel(n, R=5)
-    custom_model.draw_graph()
-    print("Custom Model Graph Representation:")
     print(custom_model.get_graph_representation())
 
-    # G(n,p) Model
-    gnp_model = GnpModel(n, p)
-    gnp_model.draw_graph()
-    print("G(n,p) Model Graph Representation:")
-    print(gnp_model.get_graph_representation())
+    # # G(n,p) Model
+    # gnp_model = GnpModel(n, p)
+    # gnp_model.draw_graph()
+    # print("G(n,p) Model Graph Representation:")
+    # print(gnp_model.get_graph_representation())
 
-    # Layered Model
-    layered_model = LayeredModel(n, layers)
-    layered_model.draw_graph()
-    print("Layered Model Graph Representation:")
-    print(layered_model.get_graph_representation())
+    # # Layered Model
+    # layered_model = LayeredModel(n, layers)
+    # layered_model.draw_graph()
+    # print("Layered Model Graph Representation:")
+    # print(layered_model.get_graph_representation())
 
 if __name__ == "__main__":
     main()
