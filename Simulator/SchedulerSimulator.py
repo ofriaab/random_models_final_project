@@ -66,7 +66,7 @@ class SchedulerSimulator:
                     task.end_time = self.current_time + task.runtime
                     self.running_tasks.append(task)
                     self.processors[i] = task
-                    # print(f"Time {self.current_time}: Assigned {task.task_id} to processor {i} (runtime: {task.runtime})")
+                    print(f"Time {self.current_time}: Assigned {task.task_id} to processor {i} (runtime: {task.runtime})")
                     break
 
     def process_next_completion(self):
@@ -77,7 +77,7 @@ class SchedulerSimulator:
         next_task = self.running_tasks.pop(0)
         self.current_time = next_task.end_time
         self.processors[next_task.processor] = None
-        # print(f"Time {self.current_time}: Completed {next_task.task_id} on processor {next_task.processor}")
+        print(f"Time {self.current_time}: Completed {next_task.task_id} on processor {next_task.processor}")
         for task in self.tasks.values():
             if next_task.task_id in task.dependencies:
                 print(f'next task id: {next_task.task_id}')
@@ -96,13 +96,13 @@ class SchedulerSimulator:
                 self.process_next_completion()
 
 
-    def save_statistics(self):
+    def save_statistics(self,file_name='statistics'):
         """
         Saves the statistics of the simulation to a file named 'statistics.txt'.
         """
         self.stats["makespan"] = self.current_time
         # Assuming throughput and waiting/turnaround times are calculated during the run
-        with open("statistics.txt", "w") as file:
+        with open(f"{file_name}.txt", "w") as file:
             file.write(f"Makespan: {self.stats['makespan']}\n")
             # file.write(f"Processor Utilization: {self.stats['processor_utilization']}\n")
             # file.write(f"Throughput: {self.stats['throughput']}\n")
