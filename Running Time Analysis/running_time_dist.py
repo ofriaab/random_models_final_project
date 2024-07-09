@@ -3,8 +3,7 @@ import numpy as np
 import gsf_prof
 import sys
 import matplotlib.pyplot as plt
-
-
+import scipy.stats as stats
 
 def parse_file(file_name):
     global nodes_dict
@@ -52,16 +51,8 @@ def parse_file(file_name):
 
         return running_time_lst
 
-
-
-
-
-
-    running_time_lst=parse_file(file_name)
+    running_time_lst = parse_file(file_name)
     return running_time_lst
-
-
-
 
 def get_file_paths(folder_path):
     file_paths = []
@@ -70,22 +61,18 @@ def get_file_paths(folder_path):
             file_paths.append(file)
     return file_paths
 
-
-
 # Specify the folder path from which you want to get file paths
-folder_path = 'C:\\Users\yairr\OneDrive\מסמכים\FinalProject\profiles'
+folder_path = 'C:\\Users\\yairr\\OneDrive\\מסמכים\\FinalProject\\profiles'
 
 # Get all file paths in the specified folder
 all_files = get_file_paths(folder_path)
-total_running_time_lst=[]
+total_running_time_lst = []
+
 # Process each file using the parse_file function
 for file_path in all_files:
     print(file_path)
     file_running_time_lst = parse_file(f'profiles/{file_path}')
-
     total_running_time_lst.extend(file_running_time_lst)
-
-
 
 def remove_highest_10_percent(values):
     if not values:
@@ -93,17 +80,18 @@ def remove_highest_10_percent(values):
 
     sorted_values = sorted(values)
     n = len(sorted_values)
-    num_to_remove = int(n * 0.1)
+    num_to_remove = int(n * 0.0)
 
     # Remove the highest 10%
     result = sorted_values[:n - num_to_remove]
     return result
 
 # Example usage
-
-result = remove_highest_10_percent(total_running_time_lst)
+# result = remove_highest_10_percent(total_running_time_lst)
+result=total_running_time_lst
 average_running_time = np.mean(result)
-print(f'the mean is : {average_running_time}')
+print(f'The mean is: {average_running_time}')
+
 # Calculate the histogram data
 counts, bin_edges = np.histogram(result, bins=50)
 
@@ -113,15 +101,32 @@ hist_dict = {f'{bin_edges[i]:.2f}-{bin_edges[i+1]:.2f}': counts[i] for i in rang
 # Print the dictionary
 print(hist_dict)
 
-
 # Plotting
 plt.figure(figsize=(10, 6))  # Adjust size if necessary
 plt.hist(result, bins=50, edgecolor='black', alpha=0.7)
-plt.xlabel('running time')
+plt.xlabel('Running Time')
 plt.ylabel('Frequency')
-plt.title('Frequency Distribution of running time of tasks')
+plt.title('Frequency Distribution of Running Time of Tasks')
 plt.grid(True)
 plt.show()
 
-
 print('done')
+
+def fit_gamma_distribution(data):
+    # Fit a gamma distribution to the data
+    shape, loc, scale = stats.gamma.fit(data)
+    return shape, loc, scale
+
+# Fit a gamma distribution to the data
+shape, loc, scale = fit_gamma_distribution(result)
+
+# Save the results to a text file
+with open('running_times.txt', 'w') as f:
+    for value in result:
+        f.write(f"{value}\n")
+
+# Save the distribution parameters to a text file
+with open('distribution_params.txt', 'w') as f:
+    f.write(f"{shape} {loc} {scale}")
+
+print(f'Fitted gamma distribution parameters: shape={shape}, loc={loc}, scale={scale}')

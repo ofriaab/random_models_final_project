@@ -26,17 +26,18 @@ class MinimalRuntimeAlgorithm(SchedulingAlgorithm):
         return min_task
 
 class MaxOutdegreeAlgorithm(SchedulingAlgorithm):
-    def choose_next_task(self, ready_tasks):
-        max_task = None
-        max_outdegree = -1
+    # def choose_next_task(self, ready_tasks):
+    #     max_task = None
+    #     max_outdegree = -1
 
-        for task in ready_tasks:
-            current_outdegree = len(task.dependencies)
-            if current_outdegree > max_outdegree:
-                max_outdegree = current_outdegree
-                max_task = task
+    #     for task in ready_tasks:
+    #         current_outdegree = len(task.dependencies)
+    #         if current_outdegree > max_outdegree:
+    #             max_outdegree = current_outdegree
+    #             max_task = task
 
-        if max_task is not None:
-            ready_tasks.remove(max_task)
+    #     if max_task is not None:
+    #         ready_tasks.remove(max_task)
 
-        return max_task
+    #     return max_task
+    pass
