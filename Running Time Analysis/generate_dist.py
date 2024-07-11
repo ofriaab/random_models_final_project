@@ -1,11 +1,13 @@
 import numpy as np
 import scipy.stats as stats
 import matplotlib.pyplot as plt
-
-
+import os
 
 # Load the distribution parameters from the text file
-with open('distribution_params.txt', 'r') as f:
+current_dir = os.path.dirname(os.path.abspath(__file__))
+file_path = os.path.join(current_dir, 'distribution_params.txt')
+
+with open(file_path, 'r') as f:
     shape, loc, scale = map(float, f.read().split())
 
 def generate_random_samples(shape, loc, scale, size=7000):
