@@ -9,6 +9,9 @@ file_path = os.path.join(current_dir, 'distribution_params.txt')
 
 with open(file_path, 'r') as f:
     shape, loc, scale = map(float, f.read().split())
+    print(f'shape:{shape}')
+    print(f'loc:{loc}')
+    print(f'scale:{scale}')
 
 def generate_random_samples(shape, loc, scale, size=7000):
     # Generate random samples from the fitted gamma distribution
