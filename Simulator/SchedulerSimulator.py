@@ -1,7 +1,6 @@
 from collections import deque
 from Task import Task
-# from SchedulingAlgorithm import SimpleQueueAlgorithm,MinimalRuntimeAlgorithm,MaxOutdegreeAlgorithm
-
+import SchedulingAlgorithm as sa
 
 class SchedulerSimulator:
     """
@@ -28,31 +27,24 @@ class SchedulerSimulator:
             num_processors (int): The number of processors available.
             scheduling_algorithm (SchedulingAlgorithm): The algorithm used to choose the next task to schedule.
         """
-        self.tasks = {task_id: Task(task_id, runtime, dependencies) for task_id, runtime, dependencies in tasks}
+        self.tasks = {task_id: Task(task_id, runtime,in_degree, out_neighbors) for task_id, runtime,in_degree, out_neighbors in tasks}
         self.num_processors = num_processors
         self.scheduling_algorithm = scheduling_algorithm
         self.ready_tasks = deque()
         self.running_tasks = []
-        self.indegree = {task_id: 0 for task_id in self.tasks}
         self.current_time = 0
         self.processors = [None] * num_processors
         self.stats = {
-            "makespan": 0,
-            "processor_utilization": 0,
-            "throughput": 0,
-            "avg_waiting_time": 0,
-            "avg_turnaround_time": 0
+            "makespan": 0
         }
 
     def initialize_indegree_and_ready_tasks(self):
         """
-        Initializes the indegree for each task and the ready tasks deque.
+        Initializes the ready tasks deque.
         """
         for task in self.tasks.values():
-            self.indegree[task.task_id]+=len(task.dependencies)
-        for task_id, degree in self.indegree.items():
-            if degree == 0:
-                self.ready_tasks.append(self.tasks[task_id])
+            if task.in_degree==0:
+                self.ready_tasks.append(task)
 
     def assign_tasks(self):
         """
@@ -66,7 +58,7 @@ class SchedulerSimulator:
                     task.end_time = self.current_time + task.runtime
                     self.running_tasks.append(task)
                     self.processors[i] = task
-                    print(f"Time {self.current_time}: Assigned {task.task_id} to processor {i} (runtime: {task.runtime})")
+                    # print(f"Time {self.current_time}: Assigned {task.task_id} to processor {i} (runtime: {task.runtime})")
                     break
 
     def process_next_completion(self):
@@ -77,13 +69,13 @@ class SchedulerSimulator:
         next_task = self.running_tasks.pop(0)
         self.current_time = next_task.end_time
         self.processors[next_task.processor] = None
-        print(f"Time {self.current_time}: Completed {next_task.task_id} on processor {next_task.processor}")
-        for task in self.tasks.values():
-            if next_task.task_id in task.dependencies:
-                print(f'next task id: {next_task.task_id}')
-                task.dependencies.remove(next_task.task_id)
-                if not task.dependencies:
-                    self.ready_tasks.append(task)
+        # print(f"Time {self.current_time}: Completed {next_task.task_id} on processor {next_task.processor}")
+        for out_neighbor in next_task.out_neighbors:
+            self.tasks[out_neighbor].in_degree-=1
+            if  self.tasks[out_neighbor].in_degree==0:
+                 self.ready_tasks.append(self.tasks[out_neighbor])
+
+
 
     def run(self):
         """
@@ -102,25 +94,22 @@ class SchedulerSimulator:
         """
         self.stats["makespan"] = self.current_time
         # Assuming throughput and waiting/turnaround times are calculated during the run
-        with open(f"{file_name}.txt", "w") as file:
+        with open(f"statistics/{file_name}.txt", "w") as file:
             file.write(f"Makespan: {self.stats['makespan']}\n")
-            # file.write(f"Processor Utilization: {self.stats['processor_utilization']}\n")
-            # file.write(f"Throughput: {self.stats['throughput']}\n")
-            # file.write(f"Average Waiting Time: {self.stats['avg_waiting_time']}\n")
-            # file.write(f"Average Turnaround Time: {self.stats['avg_turnaround_time']}\n")
+
 
 
 # # Example usage:
 # tasks = [
-#     ("A", 3, []),
-#     ("B", 2, ["A"]),
-#     ("C", 1, ["A"]),
-#     ("D", 2, ["B", "C"])
+#     ("A", 3,0, ["B","C"]),
+#     ("B", 2,1, ["D"]),
+#     ("C", 1,1, ["D"]),
+#     ("D", 2,2, [])
 # ]
 # num_processors = 2
-# # algorithm = SimpleQueueAlgorithm()
-# algorithm=MinimalRuntimeAlgorithm()
-# # algorithm=MaxOutdegreeAlgorithm()
+# # algorithm = sa.SimpleQueueAlgorithm()
+# # algorithm=sa.MinimalRuntimeAlgorithm()
+# algorithm=sa.MaxOutdegreeAlgorithm()
 # simulator = SchedulerSimulator(tasks, num_processors, algorithm)
 # simulator.run()
 # simulator.save_statistics()

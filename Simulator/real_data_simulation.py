@@ -55,13 +55,14 @@ def parse_file(file_name):
         global nodes_dict
         tasks=[]
         for node in nodes_dict.values():
-            tasks.append((node.name,node.duration,[dep for dep in node.dependencies]))
-            # for dep_name in node.dependencies:
-            #     dep_node = nodes_dict.get(dep_name)
-            #     if dep_node:
-            #         dep_node.predecessors.append(node)
-            #         node.successors.append(dep_node)
-            #         dep_node.parent = node
+            for dep_name in node.dependencies:
+                dep_node = nodes_dict.get(dep_name)
+                if dep_node:
+                    dep_node.predecessors.append(node)
+                    node.successors.append(dep_node)
+                    dep_node.parent = node
+        for node in nodes_dict.values():
+            tasks.append((node.name,node.duration,len(node.predecessors),[dep for dep in node.dependencies]))
         return tasks
 
 
@@ -91,14 +92,16 @@ folder_path = 'C:\\Users\yairr\OneDrive\מסמכים\FinalProject\profiles'
 all_files = get_file_paths(folder_path)
 # Process each file using the parse_file function
 for file_path in all_files:
-    print(file_path)
-    tasks = parse_file(f'profiles/{file_path}')
-    num_processors = 2
-    # algorithm = SimpleQueueAlgorithm()
-    # algorithm=MinimalRuntimeAlgorithm()
-    algorithm=MaxOutdegreeAlgorithm()
-    simulator = SchedulerSimulator(tasks, num_processors, algorithm)
-    simulator.run()
-    simulator.save_statistics()
-    break
+
+    if file_path=='gsf.000000.prof':
+        tasks = parse_file(f'profiles/{file_path}')
+        num_processors = 4
+        # algorithm = SimpleQueueAlgorithm()
+        # algorithm=MinimalRuntimeAlgorithm()
+        algorithm=MaxOutdegreeAlgorithm()
+        simulator = SchedulerSimulator(tasks, num_processors, algorithm)
+        simulator.run()
+        simulator.save_statistics(file_name='rd_moda')
+        print(f'number of nodes: {len(tasks)}')
+        break
 
