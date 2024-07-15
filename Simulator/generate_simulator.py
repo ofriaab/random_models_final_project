@@ -8,14 +8,14 @@ def main():
     p = 0.1  # Probability for G(n,p) model
     layers = 5  # Number of layers for layer-by-layer model
 
-    # Custom Model
-    custom_model = gm.CustomModel(n, R=5)
-    tasks=custom_model.get_graph_representation()
+    # # Custom Model
+    # custom_model = gm.CustomModel(n, R=5)
+    # tasks=custom_model.get_graph_representation()
 
 
-    # # G(n,p) Model
-    # gnp_model = gm.GnpModel(n, p)
-    # tasks=gnp_model.get_graph_representation()
+    # G(n,p) Model
+    gnp_model = gm.GnpModel(n, p)
+    tasks=gnp_model.get_graph_representation()
 
 
     # Layered Model
@@ -24,12 +24,12 @@ def main():
 
 
     num_processors=4
-    algorithm = sa.SimpleQueueAlgorithm()
+    # algorithm = sa.SimpleQueueAlgorithm()
     # algorithm=sa.MinimalRuntimeAlgorithm()
-    # algorithm=sa.MaxOutdegreeAlgorithm()
+    algorithm=sa.MaxOutdegreeAlgorithm()
     simulator = SchedulerSimulator(tasks, num_processors, algorithm)
     simulator.run()
-    simulator.save_statistics(file_name='cst_sqa_5207')
+    simulator.save_statistics(file_name='gnp_moda_5207')
     print(f'number of nodes: {len(tasks)}')
 if __name__ == "__main__":
     main()

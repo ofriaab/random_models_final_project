@@ -86,10 +86,14 @@ class GnpModel(GraphModel):
         self.generate_graph()
 
     def generate_graph(self):
-        self.graph = nx.gnp_random_graph(self.n, self.p, directed=True)
-        for node in self.graph.nodes():
-            self.nodes[node]['in_degree'] = self.graph.in_degree(node)
-            self.nodes[node]['out_neighbors'] = list(self.graph.successors(node))
+        for i in range(self.n):
+            self.graph.add_node(i)
+        for i in range(self.n):
+            for j in range(i + 1, self.n):
+                if random.random() < self.p:
+                    self.graph.add_edge(i, j)
+                    self.nodes[j]['in_degree'] += 1
+                    self.nodes[i]['out_neighbors'].append(j)
 
 class LayeredModel(GraphModel):
     def __init__(self, n, layers):
