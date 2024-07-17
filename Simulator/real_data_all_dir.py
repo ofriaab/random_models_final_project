@@ -1,10 +1,9 @@
 from SchedulerSimulator import SchedulerSimulator
-from SchedulingAlgorithm import SimpleQueueAlgorithm,MinimalRuntimeAlgorithm,MaxOutdegreeAlgorithm
+from SchedulingAlgorithm import SimpleQueueAlgorithm, MinimalRuntimeAlgorithm, MaxOutdegreeAlgorithm
 import os
 import gsf_prof
 import sys
-import matplotlib.pyplot as plt
-
+import pandas as pd
 
 
 def parse_file(file_name):
@@ -53,7 +52,7 @@ def parse_file(file_name):
 
     def build_tree():
         global nodes_dict
-        tasks=[]
+        tasks = []
         for node in nodes_dict.values():
             for dep_name in node.dependencies:
                 dep_node = nodes_dict.get(dep_name)
@@ -62,18 +61,12 @@ def parse_file(file_name):
                     node.successors.append(dep_node)
                     dep_node.parent = node
         for node in nodes_dict.values():
-            tasks.append((node.name,node.duration,len(node.predecessors),[dep for dep in node.dependencies]))
+            tasks.append((node.name, node.duration, len(node.predecessors), [dep for dep in node.dependencies]))
         return tasks
 
-
-
-
     parse_file(file_name)
-    tasks=build_tree()
+    tasks = build_tree()
     return tasks
-
-
-
 
 
 def get_file_paths(folder_path):
@@ -84,24 +77,34 @@ def get_file_paths(folder_path):
     return file_paths
 
 
-
 # Specify the folder path from which you want to get file paths
-folder_path = 'C:\\Users\yairr\OneDrive\מסמכים\FinalProject\profiles'
+folder_path = 'C:\\Users\\yairr\\OneDrive\\מסמכים\\FinalProject\\profiles'
 
 # Get all file paths in the specified folder
 all_files = get_file_paths(folder_path)
-# Process each file using the parse_file function
-for file_path in all_files:
 
-    if file_path=='gsf.000000.prof':
+# Initialize results list
+results = []
+
+# Process each file using the parse_file function
+algorithms = [SimpleQueueAlgorithm(), MinimalRuntimeAlgorithm(), MaxOutdegreeAlgorithm()]
+algorithm_names = ["SimpleQueueAlgorithm", "MinimalRuntimeAlgorithm", "MaxOutdegreeAlgorithm"]
+
+for file_path in all_files:
+    if file_path.endswith('.prof'):
+        print(file_path)
         tasks = parse_file(f'profiles/{file_path}')
         num_processors = 4
-        algorithm = SimpleQueueAlgorithm()
-        # algorithm=MinimalRuntimeAlgorithm()
-        # algorithm=MaxOutdegreeAlgorithm()
-        simulator = SchedulerSimulator(tasks, num_processors, algorithm)
-        simulator.run()
-        simulator.save_statistics(file_name='rd_sqan')
-        print(f'number of nodes: {len(tasks)}')
-        break
+        row = {"File": file_path, "Number of Nodes": len(tasks)}
+        for algorithm, algo_name in zip(algorithms, algorithm_names):
+            simulator = SchedulerSimulator(tasks, num_processors, algorithm)
+            simulator.run()
+            makespan = simulator.get_makespan()
+            row[algo_name] = makespan
+        results.append(row)
 
+# Save results to an Excel file
+df = pd.DataFrame(results)
+output_file = 'C:\\Users\\yairr\\OneDrive\\מסמכים\\FinalProject\\results.xlsx'
+df.to_excel(output_file, index=False)
+print(f'Results saved to {output_file}')

@@ -5,9 +5,13 @@ class SchedulingAlgorithm(ABC):
     def choose_next_task(self, ready_tasks):
         pass
 
+class SimpleStackAlgorithm(SchedulingAlgorithm):
+    def choose_next_task(self, ready_tasks):
+        return ready_tasks.pop()  # LIFO
+
 class SimpleQueueAlgorithm(SchedulingAlgorithm):
     def choose_next_task(self, ready_tasks):
-        return ready_tasks.pop()  # FIFO
+        return ready_tasks.popleft()  # FIFO
 
 class MinimalRuntimeAlgorithm(SchedulingAlgorithm):
     def choose_next_task(self, ready_tasks):

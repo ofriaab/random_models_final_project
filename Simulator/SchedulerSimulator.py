@@ -96,6 +96,9 @@ class SchedulerSimulator:
         # Assuming throughput and waiting/turnaround times are calculated during the run
         with open(f"statistics/{file_name}.txt", "w") as file:
             file.write(f"Makespan: {self.stats['makespan']}\n")
+    def get_makespan(self):
+        self.stats["makespan"] = self.current_time
+        return self.stats['makespan']
 
 
 

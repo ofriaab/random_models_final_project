@@ -14,22 +14,22 @@ def main():
 
 
     # G(n,p) Model
-    gnp_model = gm.GnpModel(n, p)
-    tasks=gnp_model.get_graph_representation()
+    # gnp_model = gm.GnpModel(n, p)
+    # tasks=gnp_model.get_graph_representation()
 
 
     # Layered Model
-    # layered_model = gm.LayeredModel(n, layers)
-    # tasks=layered_model.get_graph_representation()
+    layered_model = gm.LayeredModel(n, layers)
+    tasks=layered_model.get_graph_representation()
 
 
     num_processors=4
-    # algorithm = sa.SimpleQueueAlgorithm()
+    algorithm = sa.SimpleQueueAlgorithm()
     # algorithm=sa.MinimalRuntimeAlgorithm()
-    algorithm=sa.MaxOutdegreeAlgorithm()
+    # algorithm=sa.MaxOutdegreeAlgorithm()
     simulator = SchedulerSimulator(tasks, num_processors, algorithm)
     simulator.run()
-    simulator.save_statistics(file_name='gnp_moda_5207')
+    simulator.save_statistics(file_name='lbl_sqan_5207')
     print(f'number of nodes: {len(tasks)}')
 if __name__ == "__main__":
     main()
